@@ -28,6 +28,5 @@ def parse_price(price):
     :return: A float representing the price.
     """
     price = re.sub(r"[^0-9.,]", "", price)
-    price = price.replace(',', '.')
+    price = price.replace(",", ".")
     return float(price)
-
