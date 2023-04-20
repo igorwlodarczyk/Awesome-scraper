@@ -3,3 +3,4 @@ venv
 log_debug*
 *.db
 __pycache__
+.idea
