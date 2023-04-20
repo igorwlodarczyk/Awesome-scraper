@@ -2,3 +2,4 @@ venv
 .vscode
 log_debug*
 *.db
+__pycache__
