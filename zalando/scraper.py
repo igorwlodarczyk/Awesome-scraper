@@ -1,7 +1,7 @@
 import asyncio
 import constants as const
 import logging
-from utils import get_currency
+from utils import get_currency, parse_sizes, parse_price
 from common.utils import clear_debug_logs
 from database.manager import add_data
 from datetime import datetime
@@ -10,6 +10,7 @@ import uuid
 
 
 async def scrap_zalando(url):
+    currency = await get_currency(url)
     unique_id = str(uuid.uuid4())[:10]
     logger = logging.getLogger(f"Zalando_scraper__{unique_id}")
     logger.setLevel(logging.DEBUG)
@@ -60,9 +61,11 @@ async def scrap_zalando(url):
                             const.xpath_sizes_button, timeout=const.timeout
                         )
                         await page.locator(const.xpath_sizes_button).click()
+                        await page.wait_for_selector(
+                            const.xpath_sizes, timeout=const.timeout
+                        )
                         sizes = await page.locator(const.xpath_sizes).all_inner_texts()
                         logger.debug("Successfully gotten available sizes!")
-                        print(sizes)
                     except:
                         logger.debug("Checking if this item is one size")
                         await page.wait_for_selector(
@@ -71,7 +74,9 @@ async def scrap_zalando(url):
                         sizes = await page.locator(const.css_one_size).text_content()
                         logger.debug("It is one size item")
                     finally:
-                        return price, sizes
+                        parsed_price = await parse_price(price)
+                        parsed_sizes = await parse_sizes(sizes)
+                        return parsed_price, parsed_sizes, currency
     except Exception as e:
         logger.error(f"Error occurred: {str(e)}", exc_info=True)
 
@@ -84,6 +89,9 @@ async def scrape_urls(urls):
 
 lis = [
     "https://www.zalando.pl/ombre-kardigan-green-om422e020-m11.html",
+    "https://www.zalando.pl/nike-sportswear-air-force-1-lv8-3-sneakersy-niskie-photon-dustdigital-pinkwhite-ni114d0fg-c11.html",
+    "https://www.zalando.pl/liewood-darla-sunglasses-unisex-okulary-przeciwsloneczne-peppermint-lcr53o009-n11.html",
+    "https://www.zalando.nl/nike-sportswear-air-force-1-sneakers-laag-white-ni114d0ht-a11.html",
 ]
 results = asyncio.run(scrape_urls(lis))
 print(results)
