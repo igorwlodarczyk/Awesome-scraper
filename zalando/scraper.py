@@ -30,6 +30,9 @@ async def scrap_zalando(url):
             await page.goto(url)
             logger.debug("Trying to accept cookies...")
             try:
+                await page.wait_for_selector(
+                    const.xpath_cookies_button, timeout=const.timeout
+                )
                 await page.locator(const.xpath_cookies_button).click()
             finally:
                 try:
@@ -81,7 +84,6 @@ async def scrape_urls(urls):
 
 lis = [
     "https://www.zalando.pl/ombre-kardigan-green-om422e020-m11.html",
-    "https://www.zalando.pl/ombre-spodnie-treningowe-navy-blue-om422e00j-k11.html",
 ]
 results = asyncio.run(scrape_urls(lis))
 print(results)
