@@ -1,7 +1,9 @@
 import asyncio
 import constants as const
 import logging
+from utils import get_currency
 from common.utils import clear_debug_logs
+from database.manager import add_data
 from datetime import datetime
 from playwright.async_api import async_playwright
 import uuid
@@ -80,7 +82,6 @@ async def scrape_urls(urls):
 lis = [
     "https://www.zalando.pl/ombre-kardigan-green-om422e020-m11.html",
     "https://www.zalando.pl/ombre-spodnie-treningowe-navy-blue-om422e00j-k11.html",
-    "https://www.zalando.pl/mcm-okulary-przeciwsloneczsdne-black-mc152k00c-q11.html",
 ]
 results = asyncio.run(scrape_urls(lis))
 print(results)
