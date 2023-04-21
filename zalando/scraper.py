@@ -1,7 +1,7 @@
 import asyncio
 import constants as const
 import logging
-from utils import clear_debug_logs
+from common.utils import clear_debug_logs
 from datetime import datetime
 from playwright.async_api import async_playwright
 import uuid
