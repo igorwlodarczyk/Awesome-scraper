@@ -30,7 +30,7 @@ async def scrap_zalando(url_db):
     try:
         async with async_playwright() as p:
             user_agent = const.user_agent
-            browser = await p.chromium.launch(headless=True)
+            browser = await p.chromium.launch(headless=False)
             context = await browser.new_context()
             await context.set_extra_http_headers({"User-Agent": user_agent})
             page = await context.new_page()
