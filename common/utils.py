@@ -3,7 +3,7 @@ import os
 import re
 
 
-def clear_debug_logs():
+def clear_debug_logs(debug_logs_path=None):
     """
     Removes all debug logs that do not contain the string "Error".
 
@@ -12,7 +12,12 @@ def clear_debug_logs():
     If the word "Error" is not found in the file, the file is deleted.
     :return: None
     """
-    for file in Path().absolute().iterdir():
+    if debug_logs_path is None:
+        file_path = Path().absolute()
+    else:
+        file_path = debug_logs_path
+
+    for file in file_path.iterdir():
         filename = os.path.basename(file)
         if "debug" in filename:
             with open(file) as f:
