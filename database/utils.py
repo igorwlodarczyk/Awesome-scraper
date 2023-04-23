@@ -15,6 +15,6 @@ async def save_data(db_name, price, currency, size, date, url, item_id):
     async with aiosqlite.connect(db_name) as db:
         await db.execute(
             "INSERT INTO scraped_data (price, currency, size, date, url, item_id) VALUES (?, ?, ?, ?, ?, ?)",
-            (price, currency, size, date, url, item_id)
+            (price, currency, size, date, url, item_id),
         )
         await db.commit()

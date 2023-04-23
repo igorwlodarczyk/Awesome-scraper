@@ -82,9 +82,17 @@ async def scrap_zalando(url_db):
                     finally:
                         parsed_price = await parse_price(price)
                         parsed_sizes = await parse_sizes(sizes)
-                        date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                        date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                         for size in parsed_sizes:
-                            await save_data(db_name, parsed_price, size, currency, date, url, item_id)
+                            await save_data(
+                                db_name,
+                                parsed_price,
+                                size,
+                                currency,
+                                date,
+                                url,
+                                item_id,
+                            )
     except Exception as e:
         logger.error(f"Error occurred: {str(e)}", exc_info=True)
 
