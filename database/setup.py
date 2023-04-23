@@ -1,5 +1,5 @@
 import sqlite3
-import constants as const
+import database.constants as const
 
 
 def setup_database(db_name):

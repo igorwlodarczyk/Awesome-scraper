@@ -1,5 +1,5 @@
 import re
-import constants as const
+import zalando.constants as const
 
 
 async def parse_price(price):

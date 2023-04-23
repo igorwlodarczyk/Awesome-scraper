@@ -1,16 +1,18 @@
 import asyncio
-import constants as const
+import zalando.constants as const
 import logging
-from utils import get_currency, parse_sizes, parse_price
+from zalando.utils import get_currency, parse_sizes, parse_price
 from common.utils import clear_debug_logs
-from database.manager import add_data
-from database.utils import get_urls_data
+from database.utils import get_urls_data, save_data
 from datetime import datetime
 from playwright.async_api import async_playwright
+from common.constants import db_name
 import uuid
 
 
-async def scrap_zalando(url):
+async def scrap_zalando(url_db):
+    item_id = url_db["item_id"]
+    url = url_db["url"]
     currency = await get_currency(url)
     unique_id = str(uuid.uuid4())[:10]
     logger = logging.getLogger(f"Zalando_scraper__{unique_id}")
@@ -27,8 +29,11 @@ async def scrap_zalando(url):
     logger.debug(f"Start url: {url}")
     try:
         async with async_playwright() as p:
-            browser = await p.chromium.launch(headless=False)
-            page = await browser.new_page()
+            user_agent = const.user_agent
+            browser = await p.chromium.launch(headless=True)
+            context = await browser.new_context()
+            await context.set_extra_http_headers({"User-Agent": user_agent})
+            page = await context.new_page()
             await page.goto(url)
             logger.debug("Trying to accept cookies...")
             try:
@@ -77,23 +82,19 @@ async def scrap_zalando(url):
                     finally:
                         parsed_price = await parse_price(price)
                         parsed_sizes = await parse_sizes(sizes)
-                        return parsed_price, parsed_sizes, currency
+                        date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                        for size in parsed_sizes:
+                            await save_data(db_name, parsed_price, size, currency, date, url, item_id)
     except Exception as e:
         logger.error(f"Error occurred: {str(e)}", exc_info=True)
 
 
-async def scrape_urls(urls):
+async def scrape_urls():
+    urls = await get_urls_data(db_name, const.store_name)
     tasks = [asyncio.create_task(scrap_zalando(url)) for url in urls]
-    results = await asyncio.gather(*tasks)
-    return results
+    await asyncio.gather(*tasks)
 
 
-lis = [
-    "https://www.zalando.pl/ombre-kardigan-green-om422e020-m11.html",
-    "https://www.zalando.pl/nike-sportswear-air-force-1-lv8-3-sneakersy-niskie-photon-dustdigital-pinkwhite-ni114d0fg-c11.html",
-    "https://www.zalando.pl/liewood-darla-sunglasses-unisex-okulary-przeciwsloneczne-peppermint-lcr53o009-n11.html",
-    "https://www.zalando.nl/nike-sportswear-air-force-1-sneakers-laag-white-ni114d0ht-a11.html",
-]
-results = asyncio.run(scrape_urls(lis))
-print(results)
-clear_debug_logs()
+def scraper_zalando():
+    asyncio.run(scrape_urls())
+    clear_debug_logs()
