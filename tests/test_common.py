@@ -27,6 +27,5 @@ def test_clear_debug_logs(tmp_path):
     clear_debug_logs(tmp_path)
     file_count = 0
     for file in tmp_path.iterdir():
-        print(file)
         file_count += 1
     assert file_count == 1
