@@ -12,7 +12,7 @@ async def get_urls_data(db_name, store_name):
 
 
 async def save_data(db_name, price, currency, size, date, url, item_id):
-    async with aiosqlite.connect(db_name) as db:
+    async with aiosqlite.connect(db_name, timeout=600) as db:
         await db.execute(
             "INSERT INTO scraped_data (price, currency, size, date, url, item_id) VALUES (?, ?, ?, ?, ?, ?)",
             (price, currency, size, date, url, item_id),
