@@ -4,6 +4,7 @@ import logging
 from utils import get_currency, parse_sizes, parse_price
 from common.utils import clear_debug_logs
 from database.manager import add_data
+from database.utils import get_urls_data
 from datetime import datetime
 from playwright.async_api import async_playwright
 import uuid
