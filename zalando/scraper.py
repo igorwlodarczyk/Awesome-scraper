@@ -1,8 +1,8 @@
 import asyncio
 import zalando.constants as const
 import logging
-from zalando.utils import get_currency, parse_sizes, parse_price
-from common.utils import clear_debug_logs
+from zalando.utils import get_currency, parse_sizes
+from common.utils import clear_debug_logs, parse_price
 from database.utils import get_urls_data, save_data
 from datetime import datetime
 from playwright.async_api import async_playwright
@@ -80,8 +80,8 @@ async def scrap_zalando(url_db):
                         sizes = await page.locator(const.css_one_size).text_content()
                         logger.debug("It is one size item")
                     finally:
-                        parsed_price = await parse_price(price)
-                        parsed_sizes = await parse_sizes(sizes)
+                        parsed_price = parse_price(price)
+                        parsed_sizes = parse_sizes(sizes)
                         date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                         if parsed_sizes is not None and parsed_price is not None:
                             for size in parsed_sizes:
@@ -98,12 +98,12 @@ async def scrap_zalando(url_db):
         logger.error(f"Error occurred: {str(e)}", exc_info=True)
 
 
-async def scrape_urls():
+async def scrap_urls():
     urls = await get_urls_data(db_name, const.store_name)
     tasks = [asyncio.create_task(scrap_zalando(url)) for url in urls]
     await asyncio.gather(*tasks)
 
 
 def scraper_zalando():
-    asyncio.run(scrape_urls())
+    asyncio.run(scrap_urls())
     clear_debug_logs()

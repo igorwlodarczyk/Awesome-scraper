@@ -1,5 +1,6 @@
 from pathlib import Path
 import os
+import re
 
 
 def clear_debug_logs():
@@ -18,3 +19,14 @@ def clear_debug_logs():
                 file_content = f.read()
                 if "Error" not in file_content:
                     os.remove(file)
+
+
+def parse_price(price):
+    """
+    Converts a string representing a price to a floating-point number.
+    :param price: A string representing the price.
+    :return: A float representing the price.
+    """
+    price = re.sub(r"[^0-9.,]", "", price)
+    price = price.replace(",", ".")
+    return float(price)

@@ -1,16 +1,4 @@
-import re
 import zalando.constants as const
-
-
-async def parse_price(price):
-    """
-    Converts a string representing a price to a floating-point number.
-    :param price: A string representing the price.
-    :return: A float representing the price.
-    """
-    price = re.sub(r"[^0-9.,]", "", price)
-    price = price.replace(",", ".")
-    return float(price)
 
 
 async def get_currency(url):
@@ -20,7 +8,7 @@ async def get_currency(url):
     return None
 
 
-async def parse_sizes(sizes):
+def parse_sizes(sizes):
     if not isinstance(sizes, list):
         sizes = [sizes]
     parsed_sizes = []
